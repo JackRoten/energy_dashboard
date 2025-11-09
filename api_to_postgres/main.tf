@@ -15,7 +15,7 @@ resource "aws_db_instance" "postgres" {
   engine                  = "postgres"
   instance_class          = "db.t3.micro"
   allocated_storage       = 20
-  username                = "admin"
+  username                = "admin_main"
   password                = "password123"  # Use a random password in real setup
   db_name                 = "apidb"
   publicly_accessible     = true
@@ -75,7 +75,7 @@ resource "aws_lambda_function" "api_lambda" {
   environment {
     variables = {
       DB_SECRET_NAME = aws_secretsmanager_secret.db_secret.name
-      AWS_REGION     = var.region
+      REGION_NAME     = var.region
     }
   }
 }
