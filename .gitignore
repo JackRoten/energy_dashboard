@@ -1,3 +1,11 @@
+.DS_Store
+.terraform.lock.hcl
+.terraform/
+lambda/.DS_Store
+terraform.tfstate
+terraform.tfstate.backup
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
