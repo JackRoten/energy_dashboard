@@ -6,7 +6,7 @@ import boto3
 
 def lambda_handler(event, context):
     secret_name = os.environ["DB_SECRET_NAME"]
-    region_name = os.environ["AWS_REGION"]
+    region_name = os.environ["REGION_NAME"]
 
     # Get DB credentials from Secrets Manager
     session = boto3.session.Session()
