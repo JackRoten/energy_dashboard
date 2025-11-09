@@ -1,10 +1,3 @@
-data "archive_file" "lambda_zip" {
-  type        = "zip"
-  source_dir  = "${path.module}/lambda"
-  output_path = "${path.module}/lambda.zip"
-}
-
-
 provider "aws" {
   region = var.region
 }
@@ -64,6 +57,14 @@ resource "aws_iam_role_policy_attachment" "lambda_secrets" {
 }
 
 # 4️⃣ Lambda function
+data "archive_file" "lambda_zip" {
+  type        = "zip"
+  source_dir  = "${path.module}/lambda"
+  excludes    = ["venv", "_pycache_"]
+  output_path = "${path.module}/lambda.zip" 
+
+}
+
 resource "aws_lambda_function" "api_lambda" {
   function_name    = "api_to_postgres_lambda"
   role             = aws_iam_role.lambda_role.arn
