@@ -4,6 +4,7 @@
 lambda/.DS_Store
 terraform.tfstate
 terraform.tfstate.backup
+lambda.zip
 
 
 # Byte-compiled / optimized / DLL files
