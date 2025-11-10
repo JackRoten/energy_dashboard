@@ -1,2 +1,27 @@
-# energy_dashboard
-Simple webapp that pulls data from EIA and displays data in a dashboard
+# USA Energy Usage Dashboard
+WIP: Simple webapp that pulls data from EIA and displays data in a dashboard.
+
+## Setup Instructions:
+Request EIA api key from: weblink. Will be sent via email.
+
+### Clone repo
+```
+git clone ssh command
+cd  energy_dashboard
+```
+
+### Install python package manager
+```
+pip install uv
+uv init 
+# To test a file without pip installing 
+uv run path/to/file.py
+```
+
+### Terraform 
+```
+terraform init # init terraform
+terraform plan # This shows what will change
+terraform apply -var "eia_api_key=EIA_API_KEY" -auto-approve
+terraform apply -auto-approve # This applies configed terraform
+```
