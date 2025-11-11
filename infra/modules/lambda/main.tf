@@ -1,3 +1,17 @@
+# Secrets Manager resource
+resource "aws_secretsmanager_secret" "eia_api_secret" {
+  name        = var.eia_secret_name
+  description = "Stores the EIA API key securely"
+}
+
+# The secret value itself
+resource "aws_secretsmanager_secret_version" "eia_api_secret_value" {
+  secret_id = aws_secretsmanager_secret.eia_api_secret.id
+  secret_string = jsonencode({
+    api_key = var.eia_api_key
+  })
+}
+
 # Lambda IAM Role
 resource "aws_iam_role" "lambda_role" {
   name = var.lambda_role_name
@@ -57,7 +71,7 @@ resource "aws_lambda_function" "api_lambda" {
   environment {
     variables = {
       DB_SECRET_NAME  = var.db_secret_name
-      EIA_SECRET_NAME = var.eia_secret_name
+      EIA_SECRET_NAME = aws_secretsmanager_secret.eia_api_secret.name
       REGION_NAME     = var.region
     }
   }

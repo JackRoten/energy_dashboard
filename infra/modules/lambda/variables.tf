@@ -1,6 +1,15 @@
 variable "region" {}
 variable "db_secret_name" {}
-variable "eia_secret_name" {}
+
+variable "eia_api_key" {
+  description = "EIA API key for accessing electricity data"
+  type        = string
+  sensitive   = true
+}
+
+variable "eia_secret_name" {
+  default = "eia_api_secret_v2"
+}
 
 variable "lambda_role_name" {
   default = "lambda_role"
