@@ -27,9 +27,10 @@ conn = psycopg2.connect(
 
 logging.info("Begining table 'electric_power_operational' creation.")
 cursor = conn.cursor()
+
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS electric_power_operational (
-    id SERIAL PRIMARY KEY,
+    id VARCHAR(255) PRIMARY KEY,
     period VARCHAR(100) NOT NULL,
     location VARCHAR(100) NOT NULL,
     state_description VARCHAR(100) NOT NULL,
@@ -37,7 +38,7 @@ CREATE TABLE IF NOT EXISTS electric_power_operational (
     sector_description VARCHAR(100) NOT NULL, 
     fueltypeid VARCHAR(100) NOT NULL,
     fuel_type_description VARCHAR(100) NOT NULL, 
-    consumption_for_eg VARCHAR(100) NOT NULL,
+    consumption_for_eg VARCHAR(100),
     consumption_for_eg_units VARCHAR(100) NOT NULL
 );
 """)

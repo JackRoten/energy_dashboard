@@ -108,22 +108,34 @@ resource "aws_iam_role_policy_attachment" "lambda_secrets" {
 }
 
 # 4️⃣ Lambda function
+resource "aws_lambda_layer_version" "python_dependencies" {
+  filename            = "${path.module}/lambda_layer.zip"
+  layer_name          = "python-dependencies-layer"
+  compatible_runtimes = ["python3.11"]
+  source_code_hash    = filebase64sha256("${path.module}/lambda_layer.zip")
+
+  description = "Python dependencies for Lambda functions"
+}
+
 data "archive_file" "lambda_zip" {
   type        = "zip"
   source_dir  = "${path.module}/lambda"
   excludes    = ["venv", "_pycache_"]
   output_path = "${path.module}/lambda.zip" 
-
 }
 
 resource "aws_lambda_function" "api_lambda" {
   function_name    = "api_to_postgres_lambda"
   role             = aws_iam_role.lambda_role.arn
   handler          = "lambda_function.lambda_handler"
-  runtime          = "python3.10"
+  runtime          = "python3.11"
   filename         = data.archive_file.lambda_zip.output_path
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
   timeout          = 60
+
+  layers = [
+    aws_lambda_layer_version.python_dependencies.arn
+  ]
 
   environment {
     variables = {
@@ -154,3 +166,4 @@ resource "aws_lambda_permission" "allow_eventbridge" {
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.daily_trigger.arn
 }
+

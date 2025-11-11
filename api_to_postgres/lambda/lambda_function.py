@@ -1,7 +1,6 @@
 import logging
 import os
 from datetime import datetime
-from tkinter import END
 from dateutil.relativedelta import relativedelta
 import json
 import psycopg2
@@ -13,6 +12,7 @@ logging.basicConfig(
     style='{',
     format='{asctime} | {levelname:<8s} | {name}:{lineno:5} | {message}'
 )
+
 def lambda_handler(event, context):
     region_name = os.environ["REGION_NAME"]
     db_secret_name = os.environ["DB_SECRET_NAME"]
@@ -102,3 +102,7 @@ def lambda_handler(event, context):
             record["fuelTypeDescription"], record["consumption-for-eg"], record["consumption-for-eg-units"])
         )
         logging.info(f"Insert row for {id}")
+        conn.commit()
+    
+    cursor.close()
+    conn.close()
