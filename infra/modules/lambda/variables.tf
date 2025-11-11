@@ -3,7 +3,7 @@ variable "db_secret_name" {}
 variable "eia_secret_name" {}
 
 variable "lambda_role_name" {
-  default = "api_lambda_role"
+  default = "lambda_role"
 }
 
 variable "lambda_layer_name" {

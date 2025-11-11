@@ -84,7 +84,6 @@ resource "aws_secretsmanager_secret_version" "eia_api_secret_value" {
 
 module "api_lambda" {
   source = "./modules/lambda"
-
   region          = var.region
   db_secret_name  = aws_secretsmanager_secret.db_secret.name
   eia_secret_name = aws_secretsmanager_secret.eia_api_secret.name
