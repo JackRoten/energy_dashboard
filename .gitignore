@@ -8,6 +8,10 @@ lambda.zip
 lambda_layer.zip
 uv.lock
 scratch_work.txt
+<<<<<<< HEAD
+=======
+infra/hashicorp/
+>>>>>>> backend_frontend_refactor
 
 
 # Byte-compiled / optimized / DLL files
