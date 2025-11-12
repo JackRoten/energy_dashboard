@@ -36,5 +36,5 @@ variable "event_rule_name" {
 }
 
 variable "schedule_expression" {
-  default = "cron(0 6 * * ? *)"
+  default = "cron(0 0 10 * ? *)"
 }

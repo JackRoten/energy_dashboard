@@ -9,11 +9,11 @@
 
 
 SELECT 
-location,
+state_description,
 SUM(CAST(consumption_for_eg AS DECIMAL)) amount
 FROM electric_power_operational
-GROUP BY location
-ORDER BY location DESC;
+GROUP BY state_description
+ORDER BY state_description DESC;
 
 
 -- avaliable units:

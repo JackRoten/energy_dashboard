@@ -4,6 +4,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import json
 import psycopg2
+from psycopg2.extras import execute_values
 import requests
 import boto3
 
@@ -44,65 +45,90 @@ def lambda_handler(event, context):
 
     params = {"api_key": api_secret["api_key"]}
     header = {
-        "frequency": "monthly",
-        "data": [
-            "consumption-for-eg"
-        ],
-        "facets": {
-            "location": [
-                "CA"
-            ]
-        },
-        "start": start,
-        "end": end,
-        "sort": [
-            {
-                "column": "period",
-                "direction": "desc"
-            }
-        ],
-        "offset": 0,
-        "length": 5000
+    "frequency": "monthly",
+    "data": [
+        "consumption-for-eg"
+    ],
+    "start": start,
+    "end": end,
+    "sort": [
+        {
+            "column": "period",
+            "direction": "desc"
+        }
+    ],
+    "offset": 0, # Calculate this based on number responses, 0 to init
+    "length": 0 # 5000 is max, 0 to init
     }
 
+    # Get total records:
     response = requests.get(URL, params=params, headers={"X-Params": json.dumps(header)})
-
-    if response.status_code != 200:
-        logging.warning(f"Error in response: {response.status_code}")
-        raise ValueError(f"Error in response: {response.status_code}")
-    else:
-        logging.info(f"Response code: {response.status_code}, getting data")
-
     response_json = response.json()
-    data = response_json['response']['data']
+    print(response_json)
+    total_records = int(response_json['response']['total'])
+    header['length'] = 5000
+    while header['offset'] < total_records:
+        
+        response = requests.get(URL, params=params, headers={"X-Params": json.dumps(header)})
+        header['offset'] = header['offset'] + 5000
+        
+        if response.status_code != 200:
+            logging.warning(f"Error in response: {response.status_code}")
+            raise ValueError(f"Error in response: {response.status_code}")
+        else:
+            logging.info(f"Response code: {response.status_code}, getting data")
 
-    if not data:
-        logging.warning(f"data for electric power operational {start} through {end} is empty")
-        raise ValueError(f"data for electric power operational {start} through {end} is empty")
-    else:
-        logging.info(f"data avalaible for {start} through {end}")
 
-    for record in data:
-        # id must be unique
-        id = record["period"] + "_" + record["location"] + "_" + record["fueltypeid"] + "_" + record["sectorid"]
-        cursor.execute(
-            """
-            INSERT INTO electric_power_operational (id, period, location, state_description, 
+        response_json = response.json()
+        data = response_json['response']['data']
+
+        if not data:
+            logging.warning(f"data for electric power operational {start} through {end} is empty")
+            raise ValueError(f"data for electric power operational {start} through {end} is empty")
+        else:
+            logging.info(f"data avalaible for {start} through {end}")
+
+        records = []
+        for record in data:
+            id_val = f"{record['period']}_{record['location']}_{record['fueltypeid']}_{record['sectorid']}"
+            records.append((
+                id_val,
+                record["period"],
+                record["location"],
+                record["stateDescription"],
+                record["sectorid"],
+                record["sectorDescription"],
+                record["fueltypeid"],
+                record["fuelTypeDescription"],
+                record["consumption-for-eg"],
+                record["consumption-for-eg-units"],
+            ))
+
+        # 2️⃣ Define the INSERT query template
+        insert_query = """
+        INSERT INTO electric_power_operational (
+            id, period, location, state_description, 
             sectorid, sector_description, fueltypeid, fuel_type_description, 
-            consumption_for_eg, consumption_for_eg_units)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            ON CONFLICT (id) DO UPDATE SET period = EXCLUDED.period, location = EXCLUDED.location, 
-            state_description = EXCLUDED.state_description, sectorid = EXCLUDED.sectorid,
-            sector_description = EXCLUDED.sector_description, fueltypeid = EXCLUDED.fueltypeid,
-            fuel_type_description = EXCLUDED.fuel_type_description, consumption_for_eg = EXCLUDED.consumption_for_eg, 
-            consumption_for_eg_units = EXCLUDED.consumption_for_eg_units
-            """,
-            (id, record["period"], record["location"], record["stateDescription"], 
-            record["sectorid"], record["sectorDescription"], record["fueltypeid"], 
-            record["fuelTypeDescription"], record["consumption-for-eg"], record["consumption-for-eg-units"])
+            consumption_for_eg, consumption_for_eg_units
         )
-        logging.info(f"Insert row for {id}")
+        VALUES %s
+        ON CONFLICT (id) DO UPDATE SET
+            period = EXCLUDED.period,
+            location = EXCLUDED.location,
+            state_description = EXCLUDED.state_description,
+            sectorid = EXCLUDED.sectorid,
+            sector_description = EXCLUDED.sector_description,
+            fueltypeid = EXCLUDED.fueltypeid,
+            fuel_type_description = EXCLUDED.fuel_type_description,
+            consumption_for_eg = EXCLUDED.consumption_for_eg,
+            consumption_for_eg_units = EXCLUDED.consumption_for_eg_units;
+        """
+
+        # 3️⃣ Execute all rows in one batch
+        execute_values(cursor, insert_query, records)
+
+        # 4️⃣ Commit once
         conn.commit()
-    
+
     cursor.close()
     conn.close()
