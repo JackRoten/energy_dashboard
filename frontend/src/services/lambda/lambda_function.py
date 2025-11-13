@@ -1,8 +1,9 @@
+# api_gateway_lambda
 import json
 import psycopg2
 import os
 
-def handler(event, context):
+def lambda_handler(event, context):
     state = event.get("pathParameters", {}).get("state", None)
     
     conn = psycopg2.connect(
