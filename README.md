@@ -1,6 +1,9 @@
 # USA Energy Usage Dashboard
 WIP: Simple webapp that pulls data from EIA and displays data in a dashboard.
 
+### First look at initial dashboard containing color differentiation based on number of energy units
+
+
 ## Setup Instructions:
 Request EIA api key from: weblink. Will be sent via email.
 
