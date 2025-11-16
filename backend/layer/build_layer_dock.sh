@@ -3,7 +3,7 @@
 # Build script for Lambda Layer using standard Python image
 set -e
 
-LAYER_DIR="layer"
+# LAYER_DIR="layer"
 BUILD_DIR="python"
 ZIP_FILE="lambda_layer.zip"
 PYTHON_VERSION="3.11"
@@ -21,7 +21,7 @@ echo "Building layer with Docker..."
 
 # Use manylinux image which is compatible with Lambda
 docker run --rm \
-  -v "$PWD/$LAYER_DIR:/var/task" \
+  -v "$PWD:/var/task" \
   -v "$PWD/$BUILD_DIR:/var/output" \
   -w /var/task \
   python:${PYTHON_VERSION}-slim \

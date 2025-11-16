@@ -1,5 +1,4 @@
 import { USMap } from "../components/USMap";
-import { WorldMap } from "../components/worldMap";
 
 export default function Dashboard() {
   return (

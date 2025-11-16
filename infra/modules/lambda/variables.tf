@@ -1,5 +1,9 @@
 variable "region" {}
-variable "db_secret_name" {}
+
+variable "db_secret_name" {
+  description = "Name for the database secret in Secrets Manager"
+  type        = string
+}
 
 variable "eia_api_key" {
   description = "EIA API key for accessing electricity data"
@@ -8,19 +12,19 @@ variable "eia_api_key" {
 }
 
 variable "eia_secret_name" {
-  default = "eia_api_secret_v2"
+  default = "eia_api_secret_v3"
 }
 
 variable "lambda_role_name" {
-  default = "lambda_role"
+  default = "e_dash_lambda_role"
 }
 
 variable "lambda_layer_name" {
   default = "python-dependencies-layer"
 }
 
-variable "lambda_function_name" {
-  default = "api_to_postgres_lambda"
+variable "eia_lambda_function_name" {
+  default = "eia_api_to_postgres"
 }
 
 variable "lambda_handler" {
@@ -31,10 +35,26 @@ variable "lambda_timeout" {
   default = 60
 }
 
-variable "event_rule_name" {
+variable "monthly_event_rule_name" {
+  default = "monthly_api_lambda_trigger"
+}
+
+variable "monthly_schedule_expression" {
+  default = "cron(0 0 10 * ? *)"
+}
+
+variable "api_gateway_lambda_function_name" {
+  default = "api_gateway"
+}
+
+# variable "api_gateway_arn" {
+#   type = string
+# }
+
+variable "daily_event_rule_name" {
   default = "daily_api_lambda_trigger"
 }
 
-variable "schedule_expression" {
+variable "daily_schedule_expression" {
   default = "cron(0 0 10 * ? *)"
 }

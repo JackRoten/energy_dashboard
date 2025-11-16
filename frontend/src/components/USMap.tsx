@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+// import { useCachedData } from "../hooks/useCachedData";
 import {
   ComposableMap,
   Geographies,
@@ -6,7 +7,7 @@ import {
 } from '@vnedyalk0v/react19-simple-maps';
 import {getStateDataMock} from "../services/api"
 
-const geoUrl = 'https://unpkg.com/us-atlas@3/states-10m.json';
+const geoUrl = 'https://unpkg.com/us-atlas@3/states-10m.json'; // figure out how to cache this file and where
 export const USMap = () => {
   const [data, setData] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
@@ -36,6 +37,9 @@ export const USMap = () => {
   if (error) {
     return <div style={{ color: "red" }}>Error: {error}</div>;
   }
+
+  // const { data, loading } = useCachedData(5 * 60 * 1000); // 5 min interval // will be used to cache data from the database
+//
 
   // Determine fill color based on data value
   const getFillColor = (stateName: string) => {
@@ -68,7 +72,7 @@ export const USMap = () => {
         {({ geographies }) =>
             geographies.map((geo) => {
               const name = geo.properties.name; // e.g. "California"
-              const value = data[name];
+              // const value = data[name];
               return (
                 <Geography
                   key={geo.rsmKey}

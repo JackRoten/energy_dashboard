@@ -15,6 +15,11 @@ logging.basicConfig(
 )
 
 def lambda_handler(event, context):
+    """
+    Triggered by cron job, not dependent event values
+    Selects 1 month of data from EIA electricity/electric-power-operational-data
+    """
+    # Get env variables
     region_name = os.environ["REGION_NAME"]
     db_secret_name = os.environ["DB_SECRET_NAME"]
     api_secret_name = os.environ["EIA_SECRET_NAME"]
@@ -64,19 +69,18 @@ def lambda_handler(event, context):
     # Get total records:
     response = requests.get(URL, params=params, headers={"X-Params": json.dumps(header)})
     response_json = response.json()
-    print(response_json)
     total_records = int(response_json['response']['total'])
     header['length'] = 5000
+    logging.info(f"getting data for {start} through {end} of length {total_records}")
     while header['offset'] < total_records:
         
         response = requests.get(URL, params=params, headers={"X-Params": json.dumps(header)})
-        header['offset'] = header['offset'] + 5000
-        
+  
         if response.status_code != 200:
             logging.warning(f"Error in response: {response.status_code}")
             raise ValueError(f"Error in response: {response.status_code}")
         else:
-            logging.info(f"Response code: {response.status_code}, getting data")
+            logging.info(f"Getting data starting at {header['offset']}")
 
 
         response_json = response.json()
@@ -85,8 +89,6 @@ def lambda_handler(event, context):
         if not data:
             logging.warning(f"data for electric power operational {start} through {end} is empty")
             raise ValueError(f"data for electric power operational {start} through {end} is empty")
-        else:
-            logging.info(f"data avalaible for {start} through {end}")
 
         records = []
         for record in data:
@@ -130,5 +132,14 @@ def lambda_handler(event, context):
         # 4️⃣ Commit once
         conn.commit()
 
+        header['offset'] = header['offset'] + 5000
+
+    record_count_query = """
+        SELECT count(*) FROM electric_power_operational;
+        """
+    cursor.execute(record_count_query)
+    count = cursor.fetchone()
+
+    logging.info(f"count of rows is now {count[0] if count else 0}")
     cursor.close()
     conn.close()

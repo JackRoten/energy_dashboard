@@ -1,2 +1,0 @@
-# api_gateway_lambda_layer
-psycopg2-binary==2.9.9

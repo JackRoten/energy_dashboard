@@ -1,19 +1,19 @@
 variable "ingress_port" {
-  default = 5432
+  type = number
 }
 
 variable "egress_port" {
-  default = 0
+  type = number
 }
 
 variable "cidr_blocks" {
-  default = ["0.0.0.0/0"]
+  description = "IP Addresses Allocation"
+  type = list
 }
 
 variable "db_secret_name" {
   description = "Name for the database secret in Secrets Manager"
   type        = string
-  default     = "api_postgres_secret"
 }
 
 variable "db_instance" {
@@ -29,15 +29,4 @@ variable "db_instance" {
     publicly_accessible = bool
     skip_final_snapshot = bool
   })
-  default = {
-    identifier          = "api-postgres-db"
-    engine              = "postgres"
-    instance_class      = "db.t3.micro"
-    allocated_storage   = 20
-    username            = "admin_main"
-    passsword           = "password123" # Use a random password in real setup
-    db_name             = "apidb"
-    publicly_accessible = true
-    skip_final_snapshot = true
-  }
 }

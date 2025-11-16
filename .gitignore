@@ -28,6 +28,7 @@ dist-ssr
 .DS_Store
 .terraform.lock.hcl
 .terraform/
+*.tfvars
 lambda/.DS_Store
 terraform.tfstate
 terraform.tfstate.backup

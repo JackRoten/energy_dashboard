@@ -6,7 +6,7 @@ data "aws_vpc" "default" {
 
 # 👇 Create a security group for PostgreSQL access
 resource "aws_security_group" "rds_sg" {
-  name        = "rds_public_access_sg"
+  name        = "e_dash/rds_public_access_sg"
   description = "Allow inbound PostgreSQL"
   vpc_id      = data.aws_vpc.default.id
 
@@ -45,6 +45,7 @@ resource "aws_db_instance" "postgres" {
 # 2️⃣ Create Secrets Manager secret
 resource "aws_secretsmanager_secret" "db_secret" {
   name = var.db_secret_name
+  recovery_window_in_days = 0
 }
 
 resource "aws_secretsmanager_secret_version" "db_secret_value" {
