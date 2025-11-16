@@ -9,7 +9,7 @@ resource "aws_security_group" "rds_sg" {
   name        = "e_dash/rds_public_access_sg"
   description = "Allow inbound PostgreSQL"
   vpc_id      = data.aws_vpc.default.id
-
+  
   ingress {
     description = "PostgreSQL from your IP (for testing)"
     from_port   = var.ingress_port
@@ -25,6 +25,11 @@ resource "aws_security_group" "rds_sg" {
     protocol    = "-1"
     cidr_blocks = var.cidr_blocks
   }
+
+  lifecycle {
+        create_before_destroy = true
+      }
+
 }
 
 # 1️⃣ Create RDS Postgres instance
@@ -39,6 +44,7 @@ resource "aws_db_instance" "postgres" {
   publicly_accessible    = var.db_instance.publicly_accessible
   skip_final_snapshot    = var.db_instance.skip_final_snapshot
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  
 
 }
 

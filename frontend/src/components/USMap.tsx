@@ -53,7 +53,6 @@ export const USMap = () => {
   return (
     <div className="map-container">
       <div className="header">
-      <p>WIP: Working out bugs to display map</p>
       <ComposableMap
         projection="geoAlbersUsa"
         projectionConfig={{

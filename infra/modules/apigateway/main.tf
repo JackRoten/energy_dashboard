@@ -1,6 +1,10 @@
 resource "aws_api_gateway_rest_api" "api" {
   name        = "backend-api"
   description = "API for front-end"
+
+  endpoint_configuration {
+    types = ["REGIONAL"]
+  }
 }
 
 resource "aws_api_gateway_resource" "route" {
@@ -24,4 +28,18 @@ resource "aws_api_gateway_integration" "lambda_invoke" {
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = var.lambda_function_arn
+}
+
+resource "aws_api_gateway_deployment" "lambda_api_deployment" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+
+  depends_on = [
+    aws_api_gateway_integration.lambda_invoke,
+  ]
+}
+
+resource "aws_api_gateway_stage" "dev" {
+  stage_name    = "dev"
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  deployment_id = aws_api_gateway_deployment.lambda_api_deployment.id
 }
