@@ -25,3 +25,6 @@ terraform plan # This shows what will change
 terraform apply -var "eia_api_key=EIA_API_KEY" -auto-approve
 terraform apply -auto-approve # This applies configed terraform
 ```
+
+### Infra Diagram
+![alt text](https://github.com/JackRoten/energy_dashboard/blob/main/images/energy_dashboard.jpg "Infra Diagram")
