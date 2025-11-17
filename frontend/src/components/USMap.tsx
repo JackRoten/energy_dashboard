@@ -5,7 +5,6 @@ import {
   Geographies,
   Geography,
 } from '@vnedyalk0v/react19-simple-maps';
-import {getStateDataMock} from "../services/api"
 
 const geoUrl = 'https://unpkg.com/us-atlas@3/states-10m.json'; // figure out how to cache this file and where
 export const USMap = () => {
@@ -14,22 +13,37 @@ export const USMap = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function loadData() {
-      try {
+    const fetchData = async () => {
+    try {
         setLoading(true);
         setError(null);
-        const fake = await getStateDataMock();
-        console.log("Loaded map data:", fake);
-        setData(fake);
-      } catch (err) {
-        console.error("Error loading map data:", err);
+        // const fetched_data = await FetchData();
+        // console.log("Loaded map data:", fetched_data);
+        
+        const API_URL = "<move to shared secretly>";
+          const response = await fetch(API_URL);
+        if (!response.ok) {
+            throw new Error(`HTTP error, status: ${response.status}`)
+        }
+        const result = await response.json();
+        if (!Array.isArray(result)) {
+            throw new Error("Unexpected API response format");
+        }
+        const data: Record<string, number> = {};
+        for (const item of result) {
+            data[item['state_description']] = item['amount'];
+        }
+        setData(data);
+
+    } catch (err) {
+        console.error("Error loading  data:", err);
         setError(err instanceof Error ? err.message : "Failed to load data");
-      } finally {
+    } finally {
         setLoading(false);
-      }
     }
-    loadData();
-  }, []);
+    };
+    fetchData();
+}, []);
   
     if (loading) {
     return <div>Loading map data...</div>;

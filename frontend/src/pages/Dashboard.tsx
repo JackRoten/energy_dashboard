@@ -1,3 +1,4 @@
+// import { DisplayJson } from "../components/DisplayJson";
 import { USMap } from "../components/USMap";
 
 export default function Dashboard() {
@@ -6,6 +7,7 @@ export default function Dashboard() {
       <h1>U.S. Electricity Usage Dashboard</h1>
       <p>Explore energy usage across states</p>
       <USMap />
+      {/* <DisplayJson /> */}
       <div style={{ marginTop: "2rem", display: "flex", justifyContent: "center" }}>
       
       </div>
