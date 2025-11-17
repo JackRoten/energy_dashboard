@@ -4,7 +4,6 @@ WIP: Simple webapp that pulls data from EIA and displays data in a dashboard.
 ### First look at initial dashboard containing color differentiation based on number of energy units
 ![alt text](https://github.com/JackRoten/energy_dashboard/blob/main/images/usage_dashboard.png "Infra Diagram")
 
-
 ## Setup Instructions:
 Request EIA api key from: weblink. Will be sent via email.
 
@@ -32,3 +31,4 @@ terraform apply -auto-approve # This applies configed terraform
 
 ### Infra Diagram
 ![alt text](https://github.com/JackRoten/energy_dashboard/blob/main/images/infra_map.jpg "Infra Diagram")
+

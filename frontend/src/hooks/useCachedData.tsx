@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { fetchDataIfChanged } from "../services/dataService";
+import { fetchDataIfChanged } from "../services/FetchData";
 
 export function useCachedData(intervalMs = 300000) { // default: 5 min
   const [data, setData] = useState(() => {
