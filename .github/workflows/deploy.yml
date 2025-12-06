@@ -43,7 +43,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           # task-definition-family: ${{ secrets.TASK_DEFINITION_FAMILY }}
-          task-definition: ecs/task-definition.json  # <-- required
+          task-definition: infra/modules/ecs/task-definition.json  # <-- required
           container-name: react-app
           image: ${{ steps.build-image.outputs.image }}
       
