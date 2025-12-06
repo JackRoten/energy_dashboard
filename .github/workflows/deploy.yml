@@ -42,7 +42,6 @@ jobs:
         id: render-task
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          # task-definition-family: ${{ secrets.TASK_DEFINITION_FAMILY }}
           task-definition: infra/modules/ecs/task-definition.json  # <-- required
           container-name: react-app
           image: ${{ steps.build-image.outputs.image }}
@@ -50,14 +49,16 @@ jobs:
       - name: Inject IAM Role ARNs
         id: inject-arns
         run: |
-          sed -i "s|<EXECUTION_ROLE>|${{ secrets.ECS_EXECUTION_ROLE_ARN }}|" ${{ steps.render-task.outputs.task-definition }}
-          sed -i "s|<TASK_ROLE>|${{ secrets.ECS_TASK_ROLE_ARN }}|" ${{ steps.render-task.outputs.task-definition }}
+          TASK_FILE="${{ steps.render-task.outputs.task-definition }}"
+          sed -i "s|<EXECUTION_ROLE>|${{ secrets.ECS_EXECUTION_ROLE_ARN }}|" "$TASK_FILE"
+          sed -i "s|<TASK_ROLE>|${{ secrets.ECS_TASK_ROLE_ARN }}|" "$TASK_FILE"
+
       
       - name: Deploy Updated Task to ECS
         id: deploy-ecs-task
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
-          task-definition: ${{ steps.render-task.outputs.rendered-task-definition }}
+          task-definition: ${{ steps.render-task.outputs.task-definition }}
           cluster: ${{ secrets.ECS_CLUSTER }}
           service: ${{ secrets.ECS_SERVICE }}
           wait-for-service-stability: true
