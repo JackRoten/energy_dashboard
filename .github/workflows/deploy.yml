@@ -16,17 +16,12 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-
-      - name: Debug JWT claims
-        run: |
-          echo "SUB: $ACTIONS_ID_TOKEN_REQUEST_TOKEN"
       
       - name: Configure AWS Credentials from IAM Role
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
-    
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -47,10 +42,17 @@ jobs:
         id: render-task
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition-family: ${{ secrets.TASK_DEFINITION_FAMILY }}
+          # task-definition-family: ${{ secrets.TASK_DEFINITION_FAMILY }}
+          task-definition: ecs/task-definition.json  # <-- required
           container-name: react-app
           image: ${{ steps.build-image.outputs.image }}
-
+      
+      - name: Inject IAM Role ARNs
+        id: inject-arns
+        run: |
+          sed -i "s|<EXECUTION_ROLE>|${{ secrets.ECS_EXECUTION_ROLE_ARN }}|" ${{ steps.render-task.outputs.task-definition }}
+          sed -i "s|<TASK_ROLE>|${{ secrets.ECS_TASK_ROLE_ARN }}|" ${{ steps.render-task.outputs.task-definition }}
+      
       - name: Deploy Updated Task to ECS
         id: deploy-ecs-task
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
