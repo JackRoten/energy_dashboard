@@ -20,8 +20,9 @@ export const USMap = () => {
         // const fetched_data = await FetchData();
         // console.log("Loaded map data:", fetched_data);
         
-        const API_URL = "<move to shared secretly>";
-          const response = await fetch(API_URL);
+        // const API_URL = "https://e32eq9qtqf.execute-api.us-west-2.amazonaws.com/dev/data?groupby=all";
+        const proxy_url = "/api/state-data";
+          const response = await fetch(proxy_url);
         if (!response.ok) {
             throw new Error(`HTTP error, status: ${response.status}`)
         }

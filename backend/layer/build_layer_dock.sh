@@ -4,7 +4,7 @@
 set -e
 
 # LAYER_DIR="layer"
-BUILD_DIR="python"
+BUILD_DIR="backend/layer/python"
 ZIP_FILE="lambda_layer.zip"
 PYTHON_VERSION="3.11"
 
@@ -25,7 +25,7 @@ docker run --rm \
   -v "$PWD/$BUILD_DIR:/var/output" \
   -w /var/task \
   python:${PYTHON_VERSION}-slim \
-  pip install -r requirements.txt -t /var/output --platform manylinux2014_x86_64 --only-binary=:all: --upgrade --no-cache-dir
+  pip install -r backend/layer/requirements.txt -t /var/output --platform manylinux2014_x86_64 --only-binary=:all: --upgrade --no-cache-dir
 
 # Verify the build
 echo "Verifying layer contents..."
@@ -46,6 +46,7 @@ echo "Verifying zip structure..."
 unzip -l $ZIP_FILE | grep psycopg2 | head -10
 
 # Clean up
+echo "✓ Remove build dir: $BUILD_DIR"
 rm -rf $BUILD_DIR
 
 echo "✓ Layer built successfully: $ZIP_FILE"
