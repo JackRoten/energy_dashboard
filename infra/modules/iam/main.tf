@@ -37,7 +37,9 @@ resource "aws_iam_role" "github_actions_deploy_role" {
           StringLike = {
             # Restrict to pushes in your repo only!
             "token.actions.githubusercontent.com:sub" : "repo:${local.github_org}/${local.github_repo}:ref:refs/heads/main"
-
+          },
+          StringEquals = {
+            "token.actions.githubusercontent.com:aud" : "sts.amazonaws.com"
           }
         }
       }
