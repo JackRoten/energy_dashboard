@@ -8,7 +8,7 @@ logging.basicConfig(
     format='{asctime} | {levelname:<8s} | {name}:{lineno:5} | {message}'
 )
 
-secret_name = "api_postgres_secret"
+secret_name = "db_secret"
 region_name = "us-west-2"
 
 session = boto3.session.Session()

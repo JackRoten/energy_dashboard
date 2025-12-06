@@ -28,3 +28,16 @@ module "apigateway" {
   source              = "./modules/apigateway"
   lambda_function_arn = module.api_lambda.api_gateway_lambda_invoke_arn
 }
+
+module "ecs" {
+  source = "./modules/ecs"
+  region = var.region
+}
+
+module "iam" {
+  source = "./modules/iam"
+}
+
+# module "github" {
+#   source = "./modules/github"
+# }
