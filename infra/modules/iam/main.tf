@@ -1,8 +1,3 @@
-locals {
-  github_org  = "JackRoten"
-  github_repo = "energy_dashboard"
-}
-
 # -------------------------------
 # GitHub OIDC Identity Provider
 # -------------------------------
@@ -21,6 +16,7 @@ resource "aws_iam_openid_connect_provider" "github" {
 # -------------------------------
 # Deploy Role for GitHub Actions
 # -------------------------------
+
 resource "aws_iam_role" "github_actions_deploy_role" {
   name = "github-actions-ecs-deploy-role"
 
@@ -48,9 +44,12 @@ resource "aws_iam_role" "github_actions_deploy_role" {
   })
 }
 
+
 # -------------------------------
 # Policies for ECS + ECR Deploy
 # -------------------------------
+
+
 resource "aws_iam_policy" "github_actions_ecs_deploy_policy" {
   name        = "GitHubActionsECSDeployPolicy"
   description = "Allows pushing to ECR and deploying to ECS"
@@ -96,46 +95,61 @@ resource "aws_iam_role_policy_attachment" "github_actions_deploy_attach" {
   policy_arn = aws_iam_policy.github_actions_ecs_deploy_policy.arn
 }
 
-output "github_actions_deploy_role_arn" {
-  value = aws_iam_role.github_actions_deploy_role.arn
+# --------------------------
+# IAM Roles
+# --------------------------
+
+resource "aws_iam_role" "ecs_task_execution_role" {
+  name = "ecsTaskExecutionRole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = { Service = "ecs-tasks.amazonaws.com" },
+      Action = "sts:AssumeRole"
+    }]
+  })
 }
 
-provider "github" {
-  owner = "JackRoten"
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-resource "github_actions_secret" "deploy_role_arn" {
-  repository  = "energy_dashboard"
-  secret_name = "AWS_DEPLOY_ROLE_ARN"
-  plaintext_value = aws_iam_role.github_actions_deploy_role.arn
+resource "aws_iam_role" "ecs_task_role" {
+  name = "ecs-task-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
 }
 
-resource "github_actions_secret" "aws_region" {
-  repository  = "energy_dashboard"
-  secret_name = "AWS_REGION"
-  plaintext_value = "us-west-2"
-}
+resource "aws_iam_role_policy" "github_actions_passrole" {
+  name = "github-actions-passrole"
+  role = aws_iam_role.github_actions_deploy_role.id
 
-resource "github_actions_secret" "ecr_repository" {
-  repository  = "energy_dashboard"
-  secret_name = "ECR_REPOSITORY"
-  plaintext_value = "react-app"
-}
-
-resource "github_actions_secret" "ecs_cluster" {
-  repository  = "energy_dashboard"
-  secret_name = "ECS_CLUSTER"
-  plaintext_value = "react-app-cluster"
-}
-
-resource "github_actions_secret" "ecs_service" {
-  repository  = "energy_dashboard"
-  secret_name = "ECS_SERVICE"
-  plaintext_value = "react-app-service"
-}
-
-resource "github_actions_secret" "task_definition_family" {
-  repository  = "energy_dashboard"
-  secret_name = "TASK_DEFINITION_FAMILY"
-  plaintext_value = "react-app-task"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = "iam:PassRole",
+        Resource = [
+          aws_iam_role.ecs_task_execution_role.arn,
+          aws_iam_role.ecs_task_role.arn
+        ]
+      }
+    ]
+  })
 }

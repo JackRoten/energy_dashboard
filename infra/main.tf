@@ -29,15 +29,20 @@ module "apigateway" {
   lambda_function_arn = module.api_lambda.api_gateway_lambda_invoke_arn
 }
 
-module "ecs" {
-  source = "./modules/ecs"
-  region = var.region
-}
-
 module "iam" {
   source = "./modules/iam"
 }
 
-# module "github" {
-#   source = "./modules/github"
-# }
+module "ecs" {
+  source = "./modules/ecs"
+  region = var.region
+  ecs_task_execution_role_arn = module.iam.ecs_task_execution_role_arn
+}
+
+
+module "github" {
+  source = "./modules/github"
+  github_actions_deploy_role_arn = module.iam.github_actions_deploy_role_arn
+  ecs_task_execution_role_arn = module.iam.ecs_task_execution_role_arn
+  ecs_task_role_arn = module.iam.ecs_task_role_arn
+}
