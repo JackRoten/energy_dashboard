@@ -19,6 +19,8 @@ module "vpc" {
 # --------------------------
 resource "aws_ecr_repository" "react_app" {
   name = "react-app"
+  image_tag_mutability = "MUTABLE"
+  force_delete = true # Change to false if you want to keep images, true for dev work
 }
 
 # --------------------------
