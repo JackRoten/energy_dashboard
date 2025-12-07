@@ -50,7 +50,7 @@ jobs:
         id: inject-arns
         run: |
           TASK_FILE="${{ steps.render-task.outputs.task-definition }}"
-          sed -i "s|<EXECUTION_ROLE>|${{ secrets.ECS_EXECUTION_ROLE_ARN }}|" "$TASK_FILE"
+          sed -i "s|<EXECUTION_ROLE>|${{ secrets.ECS_TASK_EXECUTION_ROLE_ARN }}|" "$TASK_FILE"
           sed -i "s|<TASK_ROLE>|${{ secrets.ECS_TASK_ROLE_ARN }}|" "$TASK_FILE"
 
       
