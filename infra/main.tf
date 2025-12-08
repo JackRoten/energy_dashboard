@@ -34,6 +34,7 @@ module "apigateway" {
 module "iam" {
   # Define roles and policies for following modules
   source = "./modules/iam"
+  api_gateway_arn = module.apigateway.api_gateway_arn
 }
 
 module "ecs" {

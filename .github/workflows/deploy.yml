@@ -7,7 +7,7 @@ on:
 permissions:
   id-token: write
   contents: read
-    
+   
 jobs:
   deploy:
     name: Build, Push to ECR & Deploy to ECS
@@ -53,7 +53,6 @@ jobs:
           sed -i "s|<EXECUTION_ROLE>|${{ secrets.ECS_TASK_EXECUTION_ROLE_ARN }}|" "$TASK_FILE"
           sed -i "s|<TASK_ROLE>|${{ secrets.ECS_TASK_ROLE_ARN }}|" "$TASK_FILE"
 
-      
       - name: Deploy Updated Task to ECS
         id: deploy-ecs-task
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2

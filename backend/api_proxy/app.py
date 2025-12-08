@@ -1,18 +1,20 @@
 from flask import Flask, send_from_directory, jsonify
 import requests
 import os
-from dotenv import load_dotenv
-
-load_dotenv()
+import json
+import boto3
 
 app = Flask(__name__, static_folder="../../frontend/dist", static_url_path="")
 
-API_URL = os.getenv("API_GATEWAY_URL")
-
+region_name = 'us-west-2'
+session = boto3.session.Session()
+client = session.client("secretsmanager", region_name=region_name)
+api_gateway_id = json.loads(client.get_secret_value(SecretId="api_gateway_secret")["SecretString"])
 
 @app.route("/api/state-data")
 def state_data():
-    response = requests.get(API_URL)
+    api_url = f"https://{api_gateway_id}.execute-api.us-west-2.amazonaws.com/dev/data?groupby=all"
+    response = requests.get(api_url)
     return jsonify(response.json())
 
 

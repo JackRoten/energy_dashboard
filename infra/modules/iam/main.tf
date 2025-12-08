@@ -48,8 +48,6 @@ resource "aws_iam_role" "github_actions_deploy_role" {
 # -------------------------------
 # Policies for ECS + ECR Deploy
 # -------------------------------
-
-
 resource "aws_iam_policy" "github_actions_ecs_deploy_policy" {
   name        = "GitHubActionsECSDeployPolicy"
   description = "Allows pushing to ECR and deploying to ECS"
@@ -152,4 +150,32 @@ resource "aws_iam_role_policy" "github_actions_passrole" {
       }
     ]
   })
+}
+
+# ---------------------------------------
+
+# Define an IAM Policy that grants access to Secrets Manager
+resource "aws_iam_policy" "ecs_secrets_manager_access_policy" {
+  name        = "ecs_secrets-manager-access-policy"
+  description = "Allows ECS tasks to retrieve secrets from Secrets Manager"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret",
+        ],
+        Effect   = "Allow",
+        Resource = var.api_gateway_arn #"arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:YOUR_SECRET_NAME-??????", # Replace with your secret ARN
+      },
+    ],
+  })
+}
+
+# Attach the policy to the ECS Task Execution Role
+resource "aws_iam_role_policy_attachment" "ecs_secrets_manager_attachment" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = aws_iam_policy.ecs_secrets_manager_access_policy.arn
 }

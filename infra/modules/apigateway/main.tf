@@ -43,3 +43,18 @@ resource "aws_api_gateway_stage" "dev" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
   deployment_id = aws_api_gateway_deployment.lambda_api_deployment.id
 }
+
+# Secrets Manager resource
+resource  "aws_secretsmanager_secret" "api_gateway_secret" {
+  name        = "api_gateway_secret"
+  description = "Stores the API Gateway id"
+  recovery_window_in_days = 0
+}
+
+# The secret value itself
+resource "aws_secretsmanager_secret_version" "api_gateway_secret_value" {
+  secret_id = aws_secretsmanager_secret.api_gateway_secret.id
+  secret_string = jsonencode({
+    api_key = aws_api_gateway_rest_api.api.id
+  })
+}
