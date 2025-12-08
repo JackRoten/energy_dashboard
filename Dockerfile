@@ -1,38 +1,3 @@
-# # ----------------------------
-# # 1. Build React frontend
-# # ----------------------------
-# FROM node:18 AS frontend-builder
-
-# WORKDIR /app/frontend
-# COPY frontend/package*.json ./
-# RUN npm install
-
-# COPY frontend/ ./
-# RUN npm run build
-
-
-# # ----------------------------
-# # 2. Backend with Python
-# # ----------------------------
-# FROM python:3.11-slim AS backend
-
-# WORKDIR /app
-
-# # Install Python deps
-# COPY backend/api_proxy/requirements.txt .
-# RUN pip install --no-cache-dir -r requirements.txt
-
-# # Copy backend
-# COPY backend/api_proxy .
-
-# # Copy frontend build into backend
-# COPY --from=frontend-builder /app/frontend/dist ./build
-
-# ENV PORT=5000
-# EXPOSE 5000
-
-# CMD ["python", "app.py"]
-    
 # ----------------------------
 # 1. Build Vite React frontend
 # ----------------------------

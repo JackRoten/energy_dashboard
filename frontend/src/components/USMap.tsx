@@ -17,10 +17,7 @@ export const USMap = () => {
     try {
         setLoading(true);
         setError(null);
-        // const fetched_data = await FetchData();
-        // console.log("Loaded map data:", fetched_data);
         
-        // const API_URL = "https://e32eq9qtqf.execute-api.us-west-2.amazonaws.com/dev/data?groupby=all";
         const proxy_url = "/api/state-data";
           const response = await fetch(proxy_url);
         if (!response.ok) {
