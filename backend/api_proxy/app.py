@@ -13,7 +13,7 @@ api_gateway_id = json.loads(client.get_secret_value(SecretId="api_gateway_secret
 
 @app.route("/api/state-data")
 def state_data():
-    api_url = f"https://{api_gateway_id}.execute-api.us-west-2.amazonaws.com/dev/data?groupby=all"
+    api_url = f"https://{api_gateway_id['api_key']}.execute-api.us-west-2.amazonaws.com/dev/data?groupby=all"
     response = requests.get(api_url)
     return jsonify(response.json())
 
