@@ -28,7 +28,7 @@ COPY backend/api_proxy ./backend/api_proxy
 # Copy Vite build into backend serving directory
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
-ENV PORT=5000
-EXPOSE 5000
+ENV PORT=8080
+EXPOSE 8080
 
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "backend.api_proxy.app:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "backend.api_proxy.app:app"]

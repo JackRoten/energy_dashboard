@@ -44,7 +44,7 @@ resource "aws_lb" "public" {
 
 resource "aws_lb_target_group" "tg" {
   name     = "react-app-tg"
-  port     = 80
+  port     = 8080
   protocol = "HTTP"
   vpc_id   = module.vpc.vpc_id
   target_type = "ip"
@@ -124,8 +124,8 @@ resource "aws_ecs_task_definition" "react_app" {
       essential = true
 
       portMappings = [{
-        containerPort = 80
-        hostPort      = 80
+        containerPort = 8080
+        hostPort      = 8080
       }]
     }
   ])
@@ -150,7 +150,7 @@ resource "aws_ecs_service" "react_app" {
   load_balancer {
     target_group_arn = aws_lb_target_group.tg.arn
     container_name   = "react-app"
-    container_port   = 80
+    container_port   = 8080
   }
 
   depends_on = [
