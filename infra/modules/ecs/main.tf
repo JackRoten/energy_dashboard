@@ -30,7 +30,6 @@ resource "aws_ecs_cluster" "this" {
   name = "react-app-cluster"
 }
 
-
 # --------------------------
 # Load Balancer
 # --------------------------
@@ -44,7 +43,7 @@ resource "aws_lb" "public" {
 
 resource "aws_lb_target_group" "tg" {
   name     = "react-app-tg"
-  port     = 8080
+  port     = 80
   protocol = "HTTP"
   vpc_id   = module.vpc.vpc_id
   target_type = "ip"
@@ -125,7 +124,7 @@ resource "aws_ecs_task_definition" "react_app" {
 
       portMappings = [{
         containerPort = 8080
-        hostPort      = 8080
+        # hostPort      = 8080
       }]
     }
   ])
