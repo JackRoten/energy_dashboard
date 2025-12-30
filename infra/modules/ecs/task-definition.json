@@ -16,6 +16,10 @@
             "containerPort": 8080,
             "protocol": "tcp"
           }
+        ],
+        "secrets": [
+          {"name": "api_gateway_secret",
+          "valueFrom": "<API_GATEWAY_ID>"}
         ]
       }
     ]

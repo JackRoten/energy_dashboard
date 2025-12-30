@@ -49,3 +49,9 @@ resource "github_actions_secret" "task_definition_family" {
   secret_name = "TASK_DEFINITION_FAMILY"
   plaintext_value = "react-app-task"
 }
+
+resource "github_actions_secret" "api_gateway_id" {
+  repository  = "energy_dashboard"
+  secret_name = "API_GATEWAY_ID"
+  plaintext_value = var.api_gateway_id
+}

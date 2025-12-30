@@ -51,4 +51,5 @@ module "github" {
   github_actions_deploy_role_arn = module.iam.github_actions_deploy_role_arn
   ecs_task_execution_role_arn = module.iam.ecs_task_execution_role_arn
   ecs_task_role_arn = module.iam.ecs_task_role_arn
+  api_gateway_id = module.apigateway.api_gateway_id
 }

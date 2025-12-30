@@ -10,3 +10,6 @@ variable ecs_task_role_arn {
     description = "ecs task role arn"
 }
 
+variable api_gateway_id {
+    description = "api gateway id"
+}
