@@ -48,7 +48,7 @@ resource "aws_lb" "public" {
 
 resource "aws_lb_target_group" "tg" {
   name     = "react-app-tg"
-  port     = 80
+  port     = 8080
   protocol = "HTTP"
   vpc_id   = module.vpc.vpc_id
   target_type = "ip"
@@ -96,8 +96,8 @@ resource "aws_security_group" "ecs_sg" {
   vpc_id = module.vpc.vpc_id
 
   ingress {
-    from_port       = 80
-    to_port         = 80
+    from_port       = 8080
+    to_port         = 8080
     protocol        = "tcp"
     security_groups = [aws_security_group.lb_sg.id]
   }
