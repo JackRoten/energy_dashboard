@@ -55,19 +55,27 @@ resource "aws_iam_policy" "github_actions_ecs_deploy_policy" {
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
-      # ECR push/pull permissions
+      # ECR auth token (must be *)
       {
         Effect   = "Allow",
         Action   = [
-          "ecr:GetAuthorizationToken",
+          "ecr:GetAuthorizationToken"
+        ],
+        Resource = "*"
+      },
+      # ECR push/pull permissions (requires repo ARN)
+      {
+        Effect   = "Allow",
+        Action   = [
           "ecr:BatchCheckLayerAvailability",
+          "ecr:BatchGetImage",
           "ecr:CompleteLayerUpload",
           "ecr:GetDownloadUrlForLayer",
           "ecr:InitiateLayerUpload",
           "ecr:PutImage",
           "ecr:UploadLayerPart"
         ],
-        Resource = "*"
+        Resource = var.ecr_repository_arn
       },
 
       # ECS deployment permissions

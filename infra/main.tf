@@ -6,6 +6,8 @@ data "aws_vpc" "default" {
   default = true
 }
 
+data "aws_caller_identity" "current" {}
+
 module "rds" {
   # TODO: modularize iam roles
   source         = "./modules/rds"
@@ -31,17 +33,18 @@ module "apigateway" {
   lambda_function_arn = module.api_lambda.api_gateway_lambda_invoke_arn
 }
 
-module "iam" {
-  # Define roles and policies for following modules
-  source = "./modules/iam"
-  api_gateway_arn = module.apigateway.api_gateway_arn
-}
-
 module "ecs" {
   # Define resources for ecs deployment
   source = "./modules/ecs"
   region = var.region
   ecs_task_execution_role_arn = module.iam.ecs_task_execution_role_arn
+}
+
+module "iam" {
+  # Define roles and policies for following modules
+  source = "./modules/iam"
+  api_gateway_arn = module.apigateway.api_gateway_arn
+  ecr_repository_arn = "arn:aws:ecr:${var.region}:${data.aws_caller_identity.current.account_id}:repository/react-app"
 }
 
 
