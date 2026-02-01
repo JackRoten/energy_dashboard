@@ -2,14 +2,15 @@ from flask import Flask, send_from_directory, jsonify
 import requests
 import os
 import json
-import boto3
 
 app = Flask(__name__, static_folder="../../frontend/dist", static_url_path="")
 
-region_name = 'us-west-2'
-session = boto3.session.Session()
-client = session.client("secretsmanager", region_name=region_name)
-api_gateway_id = json.loads(client.get_secret_value(SecretId="api_gateway_secret")["SecretString"])
+# Get API Gateway ID from environment variable (injected by ECS from Secrets Manager)
+api_gateway_secret = os.environ.get("api_gateway_secret")
+if api_gateway_secret:
+    api_gateway_id = json.loads(api_gateway_secret)
+else:
+    raise RuntimeError("api_gateway_secret environment variable not set")
 
 @app.route("/api/state-data")
 def state_data():
