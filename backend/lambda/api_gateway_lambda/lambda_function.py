@@ -1,11 +1,10 @@
 # api_gateway_lambda
 import json
 import psycopg2
-import os
+# import os
 import logging
 import boto3
 from decimal import Decimal
-
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -16,10 +15,10 @@ def get_secrets():
     """Cache Secrets Manager client for reuse across Lambda invocations."""
     global secrets_client
     if secrets_client is None:
-        secrets_client = boto3.client("secretsmanager", region_name=os.environ["REGION_NAME"])
-    secret_string = secrets_client.get_secret_value(SecretId=os.environ["DB_SECRET_NAME"])["SecretString"]
+        secrets_client = boto3.client("secretsmanager", region_name='us-west-2')
+    
+    secret_string = secrets_client.get_secret_value(SecretId='db_secret')["SecretString"]
     return json.loads(secret_string)
-
 
 def decimal_to_str_encoder(obj):
         if isinstance(obj, Decimal):

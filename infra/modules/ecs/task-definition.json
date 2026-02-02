@@ -18,8 +18,10 @@
           }
         ],
         "secrets": [
-          {"name": "api_gateway_secret",
-          "valueFrom": "<API_GATEWAY_ID>"}
+          {
+            "name": "API_GATEWAY_URL",
+            "valueFrom": "<API_GATEWAY_ID>"
+          }
         ],
         "logConfiguration": {
           "logDriver": "awslogs",

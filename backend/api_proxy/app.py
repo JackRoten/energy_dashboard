@@ -1,21 +1,21 @@
 from flask import Flask, send_from_directory, jsonify
 import requests
 import os
+import boto3
 import json
 
 app = Flask(__name__, static_folder="../../frontend/dist", static_url_path="")
 
-# Get API Gateway ID from environment variable (injected by ECS from Secrets Manager)
-api_gateway_secret = os.environ.get("api_gateway_secret")
-if api_gateway_secret:
-    api_gateway_id = json.loads(api_gateway_secret)
-else:
-    raise RuntimeError("api_gateway_secret environment variable not set")
+# Get API Gateway URL from environment variable (injected by ECS from Secrets Manager)
+secrets_client = boto3.client("secretsmanager", region_name='us-west-2')
+api_gateway_url = secrets_client.get_secret_value(SecretId='api_gateway_secret')["SecretString"]
+
+if not api_gateway_url:
+    raise RuntimeError("API_GATEWAY_URL environment variable not set")
 
 @app.route("/api/state-data")
 def state_data():
-    api_url = f"https://{api_gateway_id['api_key']}.execute-api.us-west-2.amazonaws.com/dev/data?groupby=all"
-    response = requests.get(api_url)
+    response = requests.get(api_gateway_url)
     return jsonify(response.json())
 
 

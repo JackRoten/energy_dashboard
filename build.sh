@@ -20,6 +20,10 @@ aws lambda invoke \
 
 ## EXCLUDE BELOW TO BUILD FOR AWS 
 # Set env var name for api gateway
+export API_GATEWAY_ID=$(aws apigateway get-rest-apis --output json | jq -r '.["items"][0].["id"]')
+export API_GATEWAY_URL="https://$API_GATEWAY_ID.execute-api.us-west-2.amazonaws.com/dev/data?groupby=all"
+sed -i '' "s|API_GATEWAY_URL=.*|API_GATEWAY_URL=$API_GATEWAY_URL|" backend/api_proxy/.env 
+# --env-file backend/api_proxy/.env \
 
 # Build docker image
 docker build -t react-app .
@@ -28,7 +32,3 @@ docker build -t react-app .
 docker run -d -p 8080:5000 react-app
 
 # TRY WITH NO ENV FILE
-# export API_GATEWAY_ID=$(aws apigateway get-rest-apis --output json | jq -r '.["items"][0].["id"]')
-# export API_GATEWAY_URL=$"https://$API_GATEWAY_ID.execute-api.us-west-2.amazonaws.com/dev/data?groupby=all"
-# sed -i '' "s|API_GATEWAY_URL=.*|API_GATEWAY_URL=$API_GATEWAY_URL|" backend/api_proxy/.env
-#   --env-file backend/api_proxy/.env \

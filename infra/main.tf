@@ -42,9 +42,9 @@ module "ecs" {
 
 module "iam" {
   # Define roles and policies for following modules
-  source = "./modules/iam"
-  api_gateway_arn = module.apigateway.api_gateway_arn
-  ecr_repository_arn = "arn:aws:ecr:${var.region}:${data.aws_caller_identity.current.account_id}:repository/react-app"
+  source               = "./modules/iam"
+  api_gateway_arn      = module.apigateway.api_gateway_arn
+  ecr_repository_name  = "react-app"
 }
 
 
